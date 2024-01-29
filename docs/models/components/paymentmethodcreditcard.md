@@ -1,0 +1,13 @@
+# PaymentMethodCreditCard
+
+
+## Fields
+
+| Field                                                    | Type                                                     | Required                                                 | Description                                              | Example                                                  |
+| -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- |
+| `DotTag`                                                 | [components.DotTag](../../models/components/dottag.md)   | :heavy_check_mark:                                       | N/A                                                      | credit_card                                              |
+| `ID`                                                     | **string*                                                | :heavy_minus_sign:                                       | N/A                                                      | X5h6j8uLpVGK                                             |
+| `BillingAddressID`                                       | **string*                                                | :heavy_minus_sign:                                       | The ID of credit card's billing address.                 | D4g3h5tBuVYK9                                            |
+| `Network`                                                | [components.Network](../../models/components/network.md) | :heavy_check_mark:                                       | The credit card's network.                               | visa                                                     |
+| `Last4`                                                  | *string*                                                 | :heavy_check_mark:                                       | The account number's last four digits.                   | 1004                                                     |
+| `Expiration`                                             | *string*                                                 | :heavy_check_mark:                                       | The expiration date, in YYYY-MM format.                  | 2029-03                                                  |

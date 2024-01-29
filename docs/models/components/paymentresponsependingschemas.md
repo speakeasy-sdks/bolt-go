@@ -1,0 +1,11 @@
+# PaymentResponsePendingSchemas
+
+
+## Fields
+
+| Field                                                                | Type                                                                 | Required                                                             | Description                                                          | Example                                                              |
+| -------------------------------------------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `Status`                                                             | [components.SchemasStatus](../../models/components/schemasstatus.md) | :heavy_check_mark:                                                   | N/A                                                                  | awaiting_user_confirmation                                           |
+| `Action`                                                             | [components.Action](../../models/components/action.md)               | :heavy_check_mark:                                                   | N/A                                                                  | redirect                                                             |
+| `URL`                                                                | *string*                                                             | :heavy_check_mark:                                                   | N/A                                                                  | www.example.com/payments/finalize                                    |
+| `ID`                                                                 | **string*                                                            | :heavy_minus_sign:                                                   | N/A                                                                  | iKv7t5bgt1gg                                                         |

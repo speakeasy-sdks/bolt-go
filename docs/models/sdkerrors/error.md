@@ -1,0 +1,11 @@
+# Error
+
+An error has occurred, and further details are contained in the response
+
+
+## Fields
+
+| Field                                                                                                   | Type                                                                                                    | Required                                                                                                | Description                                                                                             | Example                                                                                                 |
+| ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `DotTag`                                                                                                | [sdkerrors.DotTag](../../models/sdkerrors/dottag.md)                                                    | :heavy_check_mark:                                                                                      | The type of error returned                                                                              | not_found                                                                                               |
+| `Message`                                                                                               | *string*                                                                                                | :heavy_check_mark:                                                                                      | A human-readable error message, which might include information specific to<br/>the request that was made.<br/> | The resource does not exist                                                                             |
