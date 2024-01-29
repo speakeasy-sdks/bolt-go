@@ -1,0 +1,1990 @@
+openapi: 3.0.0
+info:
+  contact:
+    email: api-help@bolt.com
+    name: Bolt
+    url: https://help.bolt.com/api-bolt/
+  description: A comprehensive Bolt API reference for interacting with Transactions, Orders, Product Catalog, Configuration, Testing, and much more.
+  termsOfService: https://www.bolt.com/end-user-terms
+  title: Bolt API Reference
+  version: 3.0.1
+servers:
+  - url: https://{environment}.bolt.com/v3
+    variables:
+      environment:
+        default: api-sandbox
+        enum:
+          - api
+          - api-sandbox
+tags:
+  - description: |
+      Account endpoints allow you to view and manage shoppers' accounts. For example,
+      you can add or remove addresses and payment information.
+    name: Account
+  - description: |
+      Use the Payments API to tokenize and process alternative payment methods including Paypal with Bolt. This API is for the Bolt
+      Accounts package.
+    name: Payments
+  - description: |
+      Callback endpoints are implemented on your servers to power Bolt experiences. Different Bolt packages require
+      different callbacks to be implemented.
+    name: Callbacks
+  - description: |
+      Endpoints that allow you to generate and retrieve test data to verify certain
+      flows in non-production environments.
+    name: Testing
+  - description: |
+      Use this endpoint to retrieve an OAuth token. Use the token to allow your ecommerce server to make calls to the Account
+      endpoint and create a one-click checkout experience for shoppers.
+    externalDocs:
+      url: https://help.bolt.com/products/accounts/direct-api/oauth-guide/
+    name: OAuth
+paths:
+  /account:
+    get:
+      summary: Retrieve account details
+      operationId: accountGet
+      x-speakeasy-name-override: GetDetails
+      description: Retrieve a shopper's account details, such as addresses and payment information
+      tags:
+        - Account
+      security:
+        - oauth:
+            - bolt.account.manage
+            - bolt.account.view
+          api-key: []
+      parameters:
+        - $ref: '#/components/parameters/x-publishable-key'
+      responses:
+        '200':
+          description: The account details were successfully retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/account'
+        4XX:
+          $ref: '#/components/responses/response-4xx'
+        default:
+          $ref: '#/components/responses/response-default'
+  /account/addresses:
+    post:
+      summary: Add an address
+      operationId: accountAddressCreate
+      x-speakeasy-name-override: AddAddress
+      description: Add an address to the shopper's account
+      tags:
+        - Account
+      security:
+        - oauth:
+            - bolt.account.manage
+          api-key: []
+      parameters:
+        - $ref: '#/components/parameters/x-publishable-key'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/address-listing'
+            examples:
+              address-all-fields:
+                $ref: '#/components/examples/address-all-fields'
+              address-some-fields:
+                $ref: '#/components/examples/address-some-fields'
+      responses:
+        '200':
+          description: The address was successfully added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/address-listing'
+        4XX:
+          $ref: '#/components/responses/response-address-error'
+        default:
+          $ref: '#/components/responses/response-default'
+  /account/addresses/{id}:
+    put:
+      summary: Edit an existing address
+      operationId: accountAddressEdit
+      x-speakeasy-name-override: UpdateAddress
+      description: |
+        Edit an existing address on the shopper's account. This does not edit addresses
+        that are already associated with other resources, such as transactions or
+        shipments.
+      tags:
+        - Account
+      security:
+        - oauth:
+            - bolt.account.manage
+          api-key: []
+      parameters:
+        - $ref: '#/components/parameters/x-publishable-key'
+        - in: path
+          name: id
+          schema:
+            type: string
+            example: D4g3h5tBuVYK9
+          required: true
+          description: The ID of the address to edit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/address-listing'
+            examples:
+              address-all-fields:
+                $ref: '#/components/examples/address-all-fields'
+              address-some-fields:
+                $ref: '#/components/examples/address-some-fields'
+      responses:
+        '200':
+          description: The address was successfully edited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/address-listing'
+        4XX:
+          $ref: '#/components/responses/response-address-error'
+        default:
+          $ref: '#/components/responses/response-default'
+    delete:
+      summary: Delete an existing address
+      operationId: accountAddressDelete
+      x-speakeasy-name-override: DeleteAddress
+      description: |
+        Delete an existing address. Deleting an address does not invalidate transactions or
+        shipments that are associated with it.
+      tags:
+        - Account
+      security:
+        - oauth:
+            - bolt.account.manage
+          api-key: []
+      parameters:
+        - $ref: '#/components/parameters/x-publishable-key'
+        - in: path
+          name: id
+          schema:
+            type: string
+            example: D4g3h5tBuVYK9
+          required: true
+          description: The ID of the address to delete
+      responses:
+        '200':
+          description: The address was successfully deleted
+        4XX:
+          $ref: '#/components/responses/response-4xx'
+        default:
+          $ref: '#/components/responses/response-default'
+  /account/exists:
+    get:
+      summary: Determine the existence of a Bolt account
+      operationId: accountExists
+      x-speakeasy-name-override: Detect
+      description: Determine whether or not an identifier is associated with an existing Bolt account.
+      tags:
+        - Account
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/x-publishable-key'
+        - $ref: '#/components/parameters/identifier'
+      responses:
+        '200':
+          description: An account associated with the specified identifier exists
+        4XX:
+          $ref: '#/components/responses/response-4xx'
+        default:
+          $ref: '#/components/responses/response-default'
+  /account/payment-methods:
+    post:
+      summary: Add a payment method to a shopper's Bolt account Wallet.
+      operationId: accountAddPaymentMethod
+      x-speakeasy-name-override: AddPaymentMethod
+      description: |
+        Add a payment method to a shopper's Bolt account Wallet. For security purposes, this request must come from
+        your backend because authentication requires the use of your private key.<br />
+        **Note**: Before using this API, the credit card details must be tokenized using Bolt's JavaScript library function,
+        which is documented in [Install the Bolt Tokenizer](https://help.bolt.com/developers/references/bolt-tokenizer).
+      tags:
+        - Account
+      security:
+        - oauth:
+            - bolt.account.manage
+          api-key: []
+      parameters:
+        - $ref: '#/components/parameters/x-publishable-key'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/payment-method'
+            examples:
+              credit-card-address-reference-id:
+                $ref: '#/components/examples/credit-card-with-address-id'
+              credit-card-address-reference-explicit:
+                $ref: '#/components/examples/credit-card-with-address-explicit'
+      responses:
+        '200':
+          description: The payment method was successfully added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/payment-method'
+        4XX:
+          $ref: '#/components/responses/response-payment-method-error'
+        default:
+          $ref: '#/components/responses/response-default'
+  /account/payment-methods/{id}:
+    delete:
+      summary: Delete an existing payment method
+      operationId: accountPaymentMethodDelete
+      x-speakeasy-name-override: DeletePaymentMethod
+      description: |
+        Delete an existing payment method. Deleting a payment method does not invalidate transactions or
+        orders that are associated with it.
+      tags:
+        - Account
+      security:
+        - oauth:
+            - bolt.account.manage
+          api-key: []
+      parameters:
+        - $ref: '#/components/parameters/x-publishable-key'
+        - in: path
+          name: id
+          schema:
+            type: string
+            example: D4g3h5tBuVYK9
+          required: true
+          description: The ID of the payment method to delete
+      responses:
+        '200':
+          description: The payment method was successfully deleted
+        4XX:
+          $ref: '#/components/responses/response-4xx'
+        default:
+          $ref: '#/components/responses/response-default'
+  /callbacks/accounts:
+    post:
+      x-speakeasy-ignore: true
+      summary: Callback to upsert full shopper account
+      operationId: callbackAccountUpsert
+      description: Create or update a shopper account with profile information, payment and addresses.
+      tags:
+        - Callbacks
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/x-bolt-hmac-sha256'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/create-full-account'
+      responses:
+        '200':
+          description: The account details were successfully created/updated
+        4XX:
+          description: An error has occurred, and further details are contained in the response.
+        default:
+          description: An error has occurred, and further details are contained in the response.
+  /guest/payments:
+    post:
+      summary: Initialize a Bolt payment for guest shoppers
+      operationId: guestPaymentsInitialize
+      x-speakeasy-group: Payments.Guest
+      x-speakeasy-name-override: Initialize
+      description: |
+        Initialize a Bolt payment token that will be used to reference this payment to
+        Bolt when it is updated or finalized for guest shoppers.
+      tags:
+        - Payments
+      security:
+        - api-key: []
+      parameters:
+        - $ref: '#/components/parameters/x-publishable-key'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/guest-payment-initialize-request'
+            examples:
+              credit_card:
+                $ref: '#/components/examples/payment-initialize-payment-method-credit-card'
+              paypal:
+                $ref: '#/components/examples/payment-initialize-payment-method-paypal'
+      responses:
+        '200':
+          description: The payment was successfully initialized, and was either immediately finalized or is pending
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/payment-response'
+              examples:
+                finalized:
+                  $ref: '#/components/examples/payment-response-finalized'
+                pending:
+                  $ref: '#/components/examples/payment-response-pending'
+        4XX:
+          $ref: '#/components/responses/response-4xx'
+        default:
+          $ref: '#/components/responses/response-default'
+  /guest/payments/{id}:
+    patch:
+      summary: Update an existing guest payment
+      operationId: guestPaymentsUpdate
+      x-speakeasy-group: Payments.Guest
+      x-speakeasy-name-override: Update
+      description: |
+        Update a pending guest payment
+      tags:
+        - Payments
+      security:
+        - api-key: []
+      parameters:
+        - $ref: '#/components/parameters/x-publishable-key'
+        - in: path
+          name: id
+          schema:
+            type: string
+            example: iKv7t5bgt1gg
+          required: true
+          description: The ID of the guest payment to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/payment-update-request'
+      responses:
+        '200':
+          description: The pending payment was successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/payment-response'
+        4XX:
+          $ref: '#/components/responses/response-4xx'
+        default:
+          $ref: '#/components/responses/response-default'
+    post:
+      summary: Perform an irreversible action (e.g. finalize) on a pending guest payment
+      operationId: guestPaymentsAction
+      x-speakeasy-group: Payments.Guest
+      x-speakeasy-name-override: PerformAction
+      description: |
+        Perform an irreversible action on a pending guest payment, such as finalizing it.
+      tags:
+        - Payments
+      security:
+        - api-key: []
+      parameters:
+        - $ref: '#/components/parameters/x-publishable-key'
+        - in: path
+          name: id
+          schema:
+            type: string
+            example: iKv7t5bgt1gg
+          required: true
+          description: The ID of the guest payment to operate on
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/payment-action-request'
+      responses:
+        '200':
+          description: The action was successfully applied to the pending guest payment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/payment-response'
+        4XX:
+          $ref: '#/components/responses/response-4xx'
+        default:
+          $ref: '#/components/responses/response-default'
+  /oauth/token:
+    post:
+      summary: Get OAuth token
+      operationId: oauthGetToken
+      x-speakeasy-name-override: GetToken
+      description: Retrieve a new or refresh an existing OAuth token.
+      tags:
+        - OAuth
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/get-access-token-request'
+      responses:
+        '200':
+          description: Access token is successfully fetched
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/get-access-token-response'
+        4XX:
+          $ref: '#/components/responses/response-4xx'
+        default:
+          $ref: '#/components/responses/response-default'
+  /payments:
+    post:
+      summary: Initialize a Bolt payment for logged in shoppers
+      operationId: paymentsInitialize
+      x-speakeasy-group: Payments.LoggedIn
+      x-speakeasy-name-override: Initialize
+      description: |
+        Initialize a Bolt payment token that will be used to reference this payment to
+        Bolt when it is updated or finalized for logged in shoppers.
+      tags:
+        - Payments
+      security:
+        - oauth:
+            - bolt.account.manage
+          api-key: []
+      parameters:
+        - $ref: '#/components/parameters/x-publishable-key'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/payment-initialize-request'
+            examples:
+              reference:
+                $ref: '#/components/examples/payment-initialize-payment-method-reference'
+              credit_card:
+                $ref: '#/components/examples/payment-initialize-payment-method-credit-card'
+              paypal:
+                $ref: '#/components/examples/payment-initialize-payment-method-paypal'
+      responses:
+        '200':
+          description: The payment was successfully initialized, and was either immediately finalized or is pending
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/payment-response'
+              examples:
+                finalized:
+                  $ref: '#/components/examples/payment-response-finalized'
+                pending:
+                  $ref: '#/components/examples/payment-response-pending'
+        4XX:
+          $ref: '#/components/responses/response-4xx'
+        default:
+          $ref: '#/components/responses/response-default'
+  /payments/{id}:
+    patch:
+      summary: Update an existing payment
+      operationId: paymentsUpdate
+      x-speakeasy-group: Payments.LoggedIn
+      x-speakeasy-name-override: Update
+      description: |
+        Update a pending payment
+      tags:
+        - Payments
+      security:
+        - oauth:
+            - bolt.account.manage
+          api-key: []
+      parameters:
+        - $ref: '#/components/parameters/x-publishable-key'
+        - in: path
+          name: id
+          schema:
+            type: string
+            example: iKv7t5bgt1gg
+          required: true
+          description: The ID of the payment to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/payment-update-request'
+      responses:
+        '200':
+          description: The pending payment was successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/payment-response'
+        4XX:
+          $ref: '#/components/responses/response-4xx'
+        default:
+          $ref: '#/components/responses/response-default'
+    post:
+      summary: Perform an irreversible action (e.g. finalize) on a pending payment
+      operationId: paymentsAction
+      x-speakeasy-group: Payments.LoggedIn
+      x-speakeasy-name-override: PerformAction
+      description: |
+        Perform an irreversible action on a pending payment, such as finalizing it.
+      tags:
+        - Payments
+      security:
+        - oauth:
+            - bolt.account.manage
+          api-key: []
+      parameters:
+        - $ref: '#/components/parameters/x-publishable-key'
+        - in: path
+          name: id
+          schema:
+            type: string
+            example: iKv7t5bgt1gg
+          required: true
+          description: The ID of the payment to operate on
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/payment-action-request'
+      responses:
+        '200':
+          description: The action was successfully applied to the pending payment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/payment-response'
+        4XX:
+          $ref: '#/components/responses/response-4xx'
+        default:
+          $ref: '#/components/responses/response-default'
+  /testing/accounts:
+    post:
+      summary: Create a test account
+      operationId: testingAccountCreate
+      x-speakeasy-name-override: CreateAccount
+      description: |
+        Create a Bolt shopper account for testing purposes.
+      tags:
+        - Testing
+      security:
+        - api-key: []
+      parameters:
+        - $ref: '#/components/parameters/x-publishable-key'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/account-test-creation-data'
+      responses:
+        '200':
+          description: The account was successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/account-test-creation-data'
+        4XX:
+          $ref: '#/components/responses/response-4xx'
+        default:
+          $ref: '#/components/responses/response-default'
+  /testing/credit-cards:
+    get:
+      summary: Retrieve a test credit card, including its token
+      operationId: testingCreditCardGet
+      x-speakeasy-name-override: GetCreditCard
+      description: |
+        Retrieve test credit card information. This includes its token, which is
+        generated against the `4111 1111 1111 1004` test card.
+      tags:
+        - Testing
+      security:
+        - api-key: []
+      responses:
+        '200':
+          description: Successfully generated test credit card details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/test-credit-card'
+        4XX:
+          $ref: '#/components/responses/response-4xx'
+        default:
+          $ref: '#/components/responses/response-default'
+components:
+  securitySchemes:
+    api-key:
+      in: header
+      name: X-API-Key
+      type: apiKey
+    oauth:
+      flows:
+        authorizationCode:
+          authorizationUrl: /v1/oauth/authorize
+          refreshUrl: /v1/oauth/token
+          scopes:
+            bolt.account.manage: This scope grants permissions to perform read/edit/delete actions on Bolt Account data
+            bolt.account.view: This scope grants permissions to perform read only actions on Bolt Account data
+            openid: This scope grants permissions that enable Bolt SSO by granting an id token JWT that stores account data
+          tokenUrl: /v1/oauth/token
+      type: oauth2
+  parameters:
+    x-publishable-key:
+      description: The publicly viewable identifier used to identify a merchant division.
+      in: header
+      name: X-Publishable-Key
+      required: true
+      schema:
+        type: string
+    identifier:
+      name: identifier
+      description: |
+        A type and value combination that defines the identifier used to detect
+        the existence of an account.
+      in: query
+      required: true
+      schema:
+        type: object
+        required:
+          - identifier_type
+          - identifier_value
+        properties:
+          identifier_type:
+            type: string
+            description: The type of identifier
+            enum:
+              - email
+              - email_sha256
+            example: email
+          identifier_value:
+            type: string
+            description: The value of the identifier. The value must be valid for the specified `identifier_type`
+            example: alice@example.com
+      examples:
+        email:
+          summary: Detect using an email
+          value:
+            identifier_type: email
+            identifier_value: alice@example.com
+        email_sha256:
+          summary: Detect using an email's SHA256 hash
+          value:
+            identifier_type: email_sha256
+            identifier_value: ff8d9819fc0e12bf0d24892e45987e249a28dce836a85cad60e28eaaa8c6d976
+    x-bolt-hmac-sha256:
+      description: Bolt signed HMAC for hook verification
+      in: header
+      name: X-Bolt-Hmac-Sha256
+      required: true
+      schema:
+        type: string
+  responses:
+    response-default:
+      description: An error has occurred, and no further details are provided (e.g. 5xx errors)
+    response-4xx:
+      description: An error has occurred, and further details are contained in the response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    response-address-error:
+      description: The address is invalid and cannot be added, or some other error has occurred
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: '#/components/schemas/error'
+              - $ref: '#/components/schemas/address-error'
+          examples:
+            missing-input:
+              summary: A required field is missing
+              value:
+                .tag: missing_input_parameter
+                message: country_code is required
+            invalid-input:
+              summary: A field has a malformed value that does not conform to the schema
+              value:
+                .tag: invalid_input_parameter
+                message: country_code value ZZ is invalid
+            invalid-postal-code:
+              summary: The postal code is invalid
+              value:
+                .tag: invalid_postal_code
+                message: postal_code value 94404 is not valid for country_code value CA
+            invalid-region:
+              summary: The region is missing or is invalid
+              value:
+                .tag: invalid_region
+                message: region value BC is not valid for country_code value US
+    response-payment-method-error:
+      description: The payment method is invalid and cannot be added, or some other error has occurred
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: '#/components/schemas/error'
+              - $ref: '#/components/schemas/credit-card-error'
+          examples:
+            missing-input:
+              summary: A required field is missing
+              value:
+                .tag: missing_input_parameter
+                message: token is required
+            invalid-input:
+              summary: A field has a malformed value that does not conform to the schema
+              value:
+                .tag: invalid_input_parameter
+                message: last4 value 104 is invalid
+            invalid-credit-card:
+              summary: The credit card payment method could not be added because it was declined
+              value:
+                .tag: declined_invalid_cvv
+                message: The payment was declined because the CVV is not valid
+  schemas:
+    address:
+      type: object
+      description: A physical address.
+      required:
+        - id
+        - first_name
+        - last_name
+        - street_address1
+        - locality
+        - postal_code
+        - country_code
+      properties:
+        id:
+          type: string
+          description: The address's unique identifier.
+          readOnly: true
+          example: D4g3h5tBuVYK9
+        first_name:
+          type: string
+          description: The first name of the person associated with this address.
+          example: Alice
+        last_name:
+          type: string
+          description: The last name of the person associated with this address.
+          example: Baker
+        company:
+          type: string
+          description: The company associated with this address.
+          example: ACME Corporation
+        street_address1:
+          type: string
+          description: The street address associated with this address.
+          example: 535 Mission St, Ste 1401
+        street_address2:
+          type: string
+          description: Any additional, optional, street address information associated with this address.
+          example: c/o Shipping Department
+        locality:
+          type: string
+          description: The locality (e.g. city, town, etc...) associated with this address.
+          example: San Francisco
+        postal_code:
+          type: string
+          description: The postal code associated with this address.
+          example: '94105'
+        region:
+          type: string
+          description: The region or administrative area (e.g. state, province, county, etc...) associated with this address.
+          example: CA
+        country_code:
+          type: string
+          description: The country (in its ISO 3166 alpha-2 format) associated with this address.
+          enum:
+            - AF
+            - AX
+            - AL
+            - DZ
+            - AS
+            - AD
+            - AO
+            - AI
+            - AQ
+            - AG
+            - AR
+            - AM
+            - AW
+            - AU
+            - AT
+            - AZ
+            - BH
+            - BS
+            - BD
+            - BB
+            - BY
+            - BE
+            - BZ
+            - BJ
+            - BM
+            - BT
+            - BO
+            - BQ
+            - BA
+            - BW
+            - BV
+            - BR
+            - IO
+            - BN
+            - BG
+            - BF
+            - BI
+            - KH
+            - CM
+            - CA
+            - CV
+            - KY
+            - CF
+            - TD
+            - CL
+            - CN
+            - CX
+            - CC
+            - CO
+            - KM
+            - CG
+            - CD
+            - CK
+            - CR
+            - CI
+            - HR
+            - CU
+            - CW
+            - CY
+            - CZ
+            - DK
+            - DJ
+            - DM
+            - DO
+            - EC
+            - EG
+            - SV
+            - GQ
+            - ER
+            - EE
+            - ET
+            - FK
+            - FO
+            - FJ
+            - FI
+            - FR
+            - GF
+            - PF
+            - TF
+            - GA
+            - GM
+            - GE
+            - DE
+            - GH
+            - GI
+            - GR
+            - GL
+            - GD
+            - GP
+            - GU
+            - GT
+            - GG
+            - GN
+            - GW
+            - GY
+            - HT
+            - HM
+            - VA
+            - HN
+            - HK
+            - HU
+            - IS
+            - IN
+            - ID
+            - IR
+            - IQ
+            - IE
+            - IM
+            - IL
+            - IT
+            - JM
+            - JP
+            - JE
+            - JO
+            - KZ
+            - KE
+            - KI
+            - KP
+            - KR
+            - KW
+            - KG
+            - LA
+            - LV
+            - LB
+            - LS
+            - LR
+            - LY
+            - LI
+            - LT
+            - LU
+            - MO
+            - MK
+            - MG
+            - MW
+            - MY
+            - MV
+            - ML
+            - MT
+            - MH
+            - MQ
+            - MR
+            - MU
+            - YT
+            - MX
+            - FM
+            - MD
+            - MC
+            - MN
+            - ME
+            - MS
+            - MA
+            - MZ
+            - MM
+            - NA
+            - NR
+            - NP
+            - NL
+            - NC
+            - NZ
+            - NI
+            - NE
+            - NG
+            - NU
+            - NF
+            - MP
+            - 'NO'
+            - OM
+            - PK
+            - PW
+            - PS
+            - PA
+            - PG
+            - PY
+            - PE
+            - PH
+            - PN
+            - PL
+            - PT
+            - PR
+            - QA
+            - RE
+            - RO
+            - RU
+            - RW
+            - BL
+            - SH
+            - KN
+            - LC
+            - MF
+            - PM
+            - VC
+            - WS
+            - SM
+            - ST
+            - SA
+            - SN
+            - RS
+            - SC
+            - SL
+            - SG
+            - SX
+            - SK
+            - SI
+            - SB
+            - SO
+            - ZA
+            - GS
+            - SS
+            - ES
+            - LK
+            - SD
+            - SR
+            - SJ
+            - SZ
+            - SE
+            - CH
+            - SY
+            - TW
+            - TJ
+            - TZ
+            - TH
+            - TL
+            - TG
+            - TK
+            - TO
+            - TT
+            - TN
+            - TR
+            - TM
+            - TC
+            - TV
+            - UG
+            - UA
+            - AE
+            - GB
+            - US
+            - UM
+            - UY
+            - UZ
+            - VU
+            - VE
+            - VN
+            - VG
+            - VI
+            - WF
+            - EH
+            - YE
+            - ZM
+            - ZW
+          example: US
+        email:
+          type: string
+          format: email
+          description: The email address associated with this address.
+          example: alice@example.com
+        phone:
+          type: string
+          format: phone
+          description: The phone number associated with this address.
+          example: '+14155550199'
+    address-listing:
+      type: object
+      description: An address saved on an account, i.e. a physical address plus any additional account-specific metadata.
+      allOf:
+        - $ref: '#/components/schemas/address'
+        - type: object
+          properties:
+            is_default:
+              type: boolean
+              description: Whether or not this is the default address saved.
+              example: true
+    address-reference-id:
+      type: object
+      required:
+        - .tag
+        - id
+      properties:
+        .tag:
+          type: string
+          enum:
+            - id
+          description: The type of address reference
+          example: id
+        id:
+          type: string
+          description: The address's ID
+          example: D4g3h5tBuVYK9
+    address-reference-explicit:
+      allOf:
+        - type: object
+          required:
+            - .tag
+          properties:
+            .tag:
+              type: string
+              enum:
+                - explicit
+              description: The type of address reference
+              example: explicit
+        - $ref: '#/components/schemas/address'
+    address-reference:
+      writeOnly: true
+      oneOf:
+        - $ref: '#/components/schemas/address-reference-id'
+        - $ref: '#/components/schemas/address-reference-explicit'
+      discriminator:
+        propertyName: .tag
+        mapping:
+          id: '#/components/schemas/address-reference-id'
+          explicit: '#/components/schemas/address-reference-explicit'
+    credit-card:
+      required:
+        - network
+        - bin
+        - last4
+        - expiration
+        - token
+      type: object
+      properties:
+        network:
+          type: string
+          description: The credit card's network.
+          enum:
+            - visa
+            - mastercard
+            - amex
+            - discover
+            - jcb
+            - unionpay
+            - alliancedata
+            - citiplcc
+          example: visa
+        bin:
+          type: string
+          description: The Bank Identification Number (BIN). This is typically the first 4 to 6 digits of the account number.
+          writeOnly: true
+          format: ^\d+$
+          example: '411111'
+        last4:
+          type: string
+          description: The account number's last four digits.
+          format: ^\d{4}$
+          example: '1004'
+        expiration:
+          type: string
+          description: The expiration date, in YYYY-MM format.
+          format: ^\d{4}-\d{2}$
+          example: 2029-03
+        token:
+          type: string
+          description: The Bolt token associated with the credit card.
+          writeOnly: true
+          example: a1B2c3D4e5F6G7H8i9J0k1L2m3N4o5P6Q7r8S9t0
+    payment-method-credit-card:
+      allOf:
+        - type: object
+          required:
+            - .tag
+            - type
+            - billing_address
+          properties:
+            .tag:
+              type: string
+              enum:
+                - credit_card
+              example: credit_card
+            id:
+              type: string
+              readOnly: true
+              example: X5h6j8uLpVGK
+            billing_address:
+              $ref: '#/components/schemas/address-reference'
+            billing_address_id:
+              description: The ID of credit card's billing address.
+              type: string
+              readOnly: true
+              example: D4g3h5tBuVYK9
+        - $ref: '#/components/schemas/credit-card'
+    payment-method-paypal:
+      type: object
+      required:
+        - .tag
+        - success
+        - cancel
+      properties:
+        .tag:
+          type: string
+          enum:
+            - paypal
+          example: paypal
+        success_url:
+          type: string
+          description: Redirect URL for successful PayPal transaction.
+          format: uri
+          writeOnly: true
+          example: www.example.com/handle_paypal_success
+        cancel_url:
+          type: string
+          description: Redirect URL for canceled PayPal transaction.
+          format: uri
+          writeOnly: true
+          example: www.example.com/handle_paypal_cancel
+    payment-method:
+      oneOf:
+        - $ref: '#/components/schemas/payment-method-credit-card'
+        - $ref: '#/components/schemas/payment-method-paypal'
+      discriminator:
+        propertyName: .tag
+        mapping:
+          credit_card: '#/components/schemas/payment-method-credit-card'
+          paypal: '#/components/schemas/payment-method-paypal'
+    profile:
+      type: object
+      required:
+        - first_name
+        - last_name
+        - email
+      properties:
+        first_name:
+          type: string
+          description: The given name of the person associated with this profile.
+          example: Alice
+        last_name:
+          type: string
+          description: The last name of the person associated with this profile.
+          example: Baker
+        email:
+          type: string
+          format: email
+          description: The email address asscoiated with this profile.
+          example: alice@example.com
+        phone:
+          type: string
+          format: phone
+          description: The phone number associated with this profile.
+          example: '+14155550199'
+    account:
+      type: object
+      required:
+        - addresses
+        - payment_methods
+      properties:
+        addresses:
+          type: array
+          description: A list of addresses associated with this account.
+          items:
+            $ref: '#/components/schemas/address-listing'
+        payment_methods:
+          type: array
+          description: A list of payment methods associated with this account.
+          items:
+            $ref: '#/components/schemas/payment-method'
+        profile:
+          $ref: '#/components/schemas/profile'
+    error:
+      type: object
+      required:
+        - .tag
+        - message
+      properties:
+        .tag:
+          type: string
+          enum:
+            - missing_input_parameter
+            - invalid_input_parameter
+            - not_found
+          description: The type of error returned
+          example: not_found
+        message:
+          type: string
+          description: |
+            A human-readable error message, which might include information specific to
+            the request that was made.
+          example: The resource does not exist
+    address-error:
+      type: object
+      required:
+        - .tag
+        - message
+      properties:
+        .tag:
+          type: string
+          enum:
+            - invalid_region
+            - invalid_postal_code
+          description: The type of error returned
+          example: invalid_region
+        message:
+          type: string
+          description: |
+            A human-readable error message, which might include information specific to
+            the request that was made.
+          example: region value BC is not valid for country_code value US
+    credit-card-error:
+      type: object
+      required:
+        - .tag
+        - message
+      properties:
+        .tag:
+          type: string
+          enum:
+            - declined_invalid_amount
+            - declined_invalid_cvv
+            - declined_invalid_number
+            - declined_expired
+            - declined_call_issuer
+          description: The type of error returned
+          example: declined_invalid_cvv
+        message:
+          type: string
+          description: |
+            A human-readable error message, which might include information specific to
+            the request that was made.
+          example: The payment was declined because the CVV is not valid
+    create-full-account:
+      type: object
+      properties:
+        account_details:
+          $ref: '#/components/schemas/account'
+        customer_data_id:
+          type: string
+          description: A unique identifier for this account on the merchant platform.
+          example: 5FEB9028D
+    profile-creation-data:
+      allOf:
+        - type: object
+          required:
+            - create_account
+          properties:
+            create_account:
+              type: boolean
+              description: Whether or not an account should be created.
+              example: true
+        - $ref: '#/components/schemas/profile'
+    amount:
+      type: object
+      description: A monetary amount, i.e. a base unit amount and a supported currency.
+      required:
+        - currency
+        - units
+      properties:
+        currency:
+          type: string
+          description: A supported currency.
+          enum:
+            - AUD
+            - CAD
+            - EUR
+            - GBP
+            - USD
+          example: USD
+        units:
+          type: integer
+          description: A monetary amount, represented in its base units (e.g. USD/EUR cents).
+          format: int64
+          example: 900
+    cart-shipment:
+      type: object
+      properties:
+        address:
+          $ref: '#/components/schemas/address-reference'
+        cost:
+          $ref: '#/components/schemas/amount'
+        carrier:
+          type: string
+          description: The name of the carrier selected.
+          example: FedEx
+    cart-discount:
+      required:
+        - amount
+      type: object
+      properties:
+        amount:
+          $ref: '#/components/schemas/amount'
+        code:
+          type: string
+          description: Discount code.
+          maxLength: 1024
+          example: SUMMER10DISCOUNT
+        details_url:
+          type: string
+          description: Used to provide a link to additional details, such as a landing page, associated with the discount offering.
+          maxLength: 8192
+          format: uri
+          example: https://www.example.com/SUMMER-SALE
+    cart-item:
+      type: object
+      required:
+        - name
+        - reference
+        - total_amount
+        - unit_price
+        - quantity
+      properties:
+        name:
+          description: The name of a given item.
+          type: string
+          maxLength: 1024
+          example: Bolt Swag Bag
+        reference:
+          type: string
+          description: This value is used by Bolt as an external reference to a given item.
+          maxLength: 1024
+          example: item_100
+        description:
+          type: string
+          description: A human-readable description of this cart item.
+          example: Large tote with Bolt logo.
+        total_amount:
+          $ref: '#/components/schemas/amount'
+        unit_price:
+          type: integer
+          description: The item's unit price, i.e. the cost of a single item exclusive of tax and discounts.
+          format: int64
+          example: 1000
+        quantity:
+          type: integer
+          description: The number of units that comprise this cart item.
+          format: int64
+          maximum: 15000
+          example: 1
+        image_url:
+          type: string
+          description: Used to provide a link to the image associated with the item.
+          maxLength: 8192
+          example: https://www.example.com/products/123456/images/1.png
+          format: uri
+    cart:
+      required:
+        - total
+        - tax
+        - order_reference
+      type: object
+      properties:
+        order_reference:
+          type: string
+          description: This value is used by Bolt as an external reference to a given order. This reference must be unique per successful transaction.
+          example: order_100
+        order_description:
+          type: string
+          description: Used optionally to pass additional information like order numbers or other IDs as needed.
+          maxLength: 1024
+          example: 'Order #1234567890'
+        display_id:
+          type: string
+          description: A shopper-facing identifier corresponding to the order reference associated with this transaction.
+          maxLength: 128
+          example: '215614191'
+        shipments:
+          type: array
+          items:
+            $ref: '#/components/schemas/cart-shipment'
+        discounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/cart-discount'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/cart-item'
+        total:
+          description: The total amount of the cart including its items and taxes (if applicable).
+          $ref: '#/components/schemas/amount'
+        tax:
+          $ref: '#/components/schemas/amount'
+    guest-payment-initialize-request:
+      type: object
+      required:
+        - profile
+        - cart
+        - payment_method
+      properties:
+        profile:
+          $ref: '#/components/schemas/profile-creation-data'
+        cart:
+          $ref: '#/components/schemas/cart'
+        payment_method:
+          $ref: '#/components/schemas/payment-method'
+    transaction:
+      type: object
+      properties:
+        reference:
+          type: string
+          example: OBYG-X1PX-FN55
+    payment-response-finalized:
+      type: object
+      required:
+        - status
+        - transaction
+      properties:
+        status:
+          type: string
+          enum:
+            - success
+          example: success
+        transaction:
+          $ref: '#/components/schemas/transaction'
+    payment-response-pending:
+      type: object
+      required:
+        - status
+        - action
+        - url
+      properties:
+        status:
+          type: string
+          enum:
+            - awaiting_user_confirmation
+          example: awaiting_user_confirmation
+        action:
+          type: string
+          enum:
+            - redirect
+          example: redirect
+        url:
+          type: string
+          format: uri
+          example: www.example.com/payments/finalize
+    payment-response:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: string
+              example: iKv7t5bgt1gg
+        - oneOf:
+            - $ref: '#/components/schemas/payment-response-finalized'
+            - $ref: '#/components/schemas/payment-response-pending'
+    payment-action-request:
+      type: object
+      required:
+        - .tag
+      properties:
+        .tag:
+          type: string
+          enum:
+            - finalize
+          example: finalize
+    payment-update-request:
+      type: object
+      properties:
+        cart:
+          $ref: '#/components/schemas/cart'
+    base-oauth-token-request:
+      type: object
+      required:
+        - client_id
+        - client_secret
+        - grant_type
+        - scope
+      properties:
+        client_id:
+          type: string
+          description: Merchant publishable key which can be found in the merchant dashboard
+        client_secret:
+          type: string
+          description: Your Bolt API Key.
+        grant_type:
+          description: |
+            The type of OAuth 2.0 grant being utilized.
+
+            The value will always be `authorization_code` when exchanging an authorization code for an access token.
+          enum:
+            - authorization_code
+          type: string
+        scope:
+          description: |
+            The scope issued to the merchant when receiving an authorization code.
+            Options include `bolt.account.manage`, `bolt.account.view`, `openid`.
+            You can find more information on these options in our
+            [OAuth scope documentation](https://help.bolt.com/developers/references/bolt-oauth/#scopes).
+          type: array
+          items:
+            type: string
+            enum:
+              - bolt.account.manage
+              - bolt.account.view
+              - openid
+        state:
+          description: A randomly generated string issued to the merchant when receiving an authorization code used to prevent CSRF attacks
+          type: string
+    get-access-token-request:
+      type: object
+      allOf:
+        - type: object
+          required:
+            - code
+          properties:
+            code:
+              description: Fetched value using OTP value from the Authorization Modal.
+              type: string
+        - $ref: '#/components/schemas/base-oauth-token-request'
+    base-oauth-token-response:
+      type: object
+      properties:
+        access_token:
+          description: An access token you can use to make requests on behalf of a Bolt Account.
+          type: string
+        expires_in:
+          description: Access token’s expiration in seconds.
+          type: integer
+        refresh_token:
+          description: A refresh token you can use to issue a brand new access token without obtaining a new authorization code.
+          type: string
+        refresh_token_scope:
+          description: The scope granted to the refresh token. Currently this will always be bolt.account.view.
+          type: array
+          items:
+            type: string
+            enum:
+              - bolt.account.manage
+              - bolt.account.view
+              - openid
+        scope:
+          description: |
+            The scope granted to access token, depending on the scope granted to the authorization code as well as the scope parameter.
+            Options include `bolt.account.manage`, `bolt.account.view`, `openid`.'
+          type: array
+          items:
+            type: string
+            enum:
+              - bolt.account.manage
+              - bolt.account.view
+              - openid
+        token_type:
+          description: The token_type will always be bearer.
+          type: string
+    get-access-token-response:
+      allOf:
+        - type: object
+          properties:
+            id_token:
+              description: A JWT token issued when the request includes the scope open_id.
+              type: string
+        - $ref: '#/components/schemas/base-oauth-token-response'
+    payment-method-reference:
+      type: object
+      required:
+        - .tag
+        - id
+      properties:
+        .tag:
+          type: string
+          enum:
+            - id
+          example: id
+        id:
+          type: string
+          description: Payment ID of the saved Bolt Payment method.
+          example: id
+    payment-method-extended:
+      oneOf:
+        - $ref: '#/components/schemas/payment-method-reference'
+        - $ref: '#/components/schemas/payment-method-credit-card'
+        - $ref: '#/components/schemas/payment-method-paypal'
+      discriminator:
+        propertyName: .tag
+        mapping:
+          id: '#/components/schemas/payment-method-reference'
+          credit_card: '#/components/schemas/payment-method-credit-card'
+          paypal: '#/components/schemas/payment-method-paypal'
+    payment-initialize-request:
+      type: object
+      required:
+        - cart
+        - payment_method
+      properties:
+        cart:
+          $ref: '#/components/schemas/cart'
+        payment_method:
+          $ref: '#/components/schemas/payment-method-extended'
+    account-test-creation-data:
+      type: object
+      required:
+        - email
+        - email_state
+        - phone
+        - phone_state
+        - otp_code
+        - oauth_code
+      properties:
+        email:
+          type: string
+          format: email
+          readOnly: true
+          example: alice@example.com
+        email_state:
+          type: string
+          enum:
+            - missing
+            - unverified
+            - verified
+          example: unverified
+        phone:
+          type: string
+          format: phone
+          readOnly: true
+          example: '+14155550199'
+        phone_state:
+          type: string
+          enum:
+            - missing
+            - unverified
+            - verified
+          example: verified
+        is_migrated:
+          type: boolean
+          writeOnly: true
+          example: true
+        has_address:
+          type: boolean
+          writeOnly: true
+          example: true
+        otp_code:
+          type: string
+          readOnly: true
+          example: '123456'
+        oauth_code:
+          type: string
+          readOnly: true
+          example: 7GSjMRSHs6Ak7C_zvVW6P2IhZOHxMK7HZKW1fMX85ms
+    test-credit-card:
+      required:
+        - network
+        - bin
+        - last4
+        - expiration
+        - token
+      type: object
+      properties:
+        network:
+          type: string
+          description: The credit card's network.
+          enum:
+            - visa
+            - mastercard
+            - amex
+            - discover
+            - jcb
+            - unionpay
+            - alliancedata
+            - citiplcc
+          example: visa
+        bin:
+          type: string
+          description: The Bank Identification Number (BIN). This is typically the first 4 to 6 digits of the account number.
+          format: ^\d+$
+          example: '411111'
+        last4:
+          type: string
+          description: The account number's last four digits.
+          format: ^\d{4}$
+          example: '1004'
+        expiration:
+          type: string
+          format: date-time
+          description: The token's expiration date. Tokens used past their expiration will be rejected.
+          example: 2023-10-31:T06:00:00Z
+        token:
+          type: string
+          description: The Bolt token associated with the credit card.
+          example: a1B2c3D4e5F6G7H8i9J0k1L2m3N4o5P6Q7r8S9t0
+  examples:
+    address-all-fields:
+      summary: A sample address where all fields, including optional fields, are set
+      value:
+        first_name: Alice
+        last_name: Baker
+        company: ACME Corporation
+        street_address1: 535 Mission St, Ste 1401
+        street_address2: c/o Shipping Department
+        locality: San Francisco
+        postal_code: '94105'
+        region: CA
+        country_code: US
+        email: alice@example.com
+        phone: '+14155550199'
+        is_default: true
+    address-some-fields:
+      summary: A sample address where only required fields are set
+      value:
+        first_name: Jean
+        last_name: Blanc
+        street_address1: 77 Rue Frédéric Chopin
+        locality: Versailles
+        postal_code: '78000'
+        country_code: FR
+    credit-card-with-address-id:
+      summary: |
+        Add a credit card, providing a billing address ID corresponding to an existing address
+        on the shopper's account
+      value:
+        .tag: credit_card
+        type: credit
+        network: visa
+        bin: '411111'
+        last4: '1004'
+        expiration: 2025-03
+        token: a1B2c3D4e5F6G7H8i9J0k1L2m3N4o5P6Q7r8S9t0
+        billing_address:
+          .tag: id
+          id: D4g3h5tBuVYK9
+    credit-card-with-address-explicit:
+      summary: Add a credit card, providing an explicit billing address
+      value:
+        .tag: credit_card
+        type: credit
+        network: visa
+        bin: '411111'
+        last4: '1004'
+        expiration: 2025-03
+        token: a1B2c3D4e5F6G7H8i9J0k1L2m3N4o5P6Q7r8S9t0
+        billing_address:
+          .tag: explicit
+          first_name: Charlie
+          last_name: Dunn
+          street_address1: 535 Mission St
+          locality: San Francisco
+          postal_code: '94105'
+          region: CA
+          country_code: US
+    payment-initialize-payment-method-credit-card:
+      summary: Payment using a credit card
+      value:
+        profile:
+          create_account: true
+          first_name: Alice
+          last_name: Baker
+          email: alice@example.com
+          phone: '+14155550199'
+        cart:
+          total:
+            units: 9000
+            currency: USD
+          tax:
+            units: 100
+            currency: USD
+          order_reference: order_100
+          order_description: 'Order #1234567890'
+          display_id: '215614191'
+          items:
+            - name: Bolt Swag Bag
+              reference: item_100
+              description: Large tote with Bolt logo.
+              total_amount:
+                units: 9000
+                currency: USD
+              unit_price: 1000
+              quantity: 9
+              image_url: https://www.example.com/products/123456/images/1.png
+          shipments:
+            - cost:
+                units: 10000
+                currency: USD
+              carrier: FedEx
+              address:
+                .tag: explicit
+                first_name: Alice
+                last_name: Baker
+                street_address1: 535 Mission St, Ste 1401
+                locality: San Francisco
+                postal_code: '94105'
+                region: CA
+                country_code: US
+          discounts:
+            - amounts:
+                total: 10000
+                currency: USD
+              code: SUMMER10DISCOUNT
+              details_url: https://www.example.com/SUMMER-SALE
+        payment_method:
+          .tag: credit_card
+          type: credit
+          network: visa
+          bin: '411111'
+          last4: '1004'
+          expiration: 2025-03
+          token: a1B2c3D4e5F6G7H8i9J0k1L2m3N4o5P6Q7r8S9t0
+          billing_address:
+            .tag: explicit
+            first_name: Alice
+            last_name: Baker
+            street_address1: 535 Mission St, Ste 1401
+            locality: San Francisco
+            postal_code: '94105'
+            region: CA
+            country_code: US
+    payment-initialize-payment-method-paypal:
+      summary: Payment using a PayPal account
+      value:
+        profile:
+          create_account: true
+          first_name: Alice
+          last_name: Baker
+          email: alice@example.com
+          phone: '+14155550199'
+        cart:
+          total:
+            units: 9000
+            currency: USD
+          tax:
+            units: 100
+            currency: USD
+          order_reference: order_100
+          order_description: 'Order #1234567890'
+          display_id: '215614191'
+          items:
+            - name: Bolt Swag Bag
+              reference: item_100
+              description: Large tote with Bolt logo.
+              total_amount:
+                units: 9000
+                currency: USD
+              unit_price: 1000
+              quantity: 9
+              image_url: https://www.example.com/products/123456/images/1.png
+          shipments:
+            - cost:
+                units: 10000
+                currency: USD
+              carrier: FedEx
+              address:
+                .tag: explicit
+                first_name: Alice
+                last_name: Baker
+                street_address1: 535 Mission St, Ste 1401
+                locality: San Francisco
+                postal_code: '94105'
+                region: CA
+                country_code: US
+          discounts:
+            - amount:
+                units: 10000
+                currency: USD
+              code: SUMMER10DISCOUNT
+              details_url: https://www.example.com/SUMMER-SALE
+        payment_method:
+          .tag: paypal
+          success_url: www.example.com/handle_paypal_success
+          cancel_url: www.example.com/handle_paypal_cancel
+    payment-response-finalized:
+      summary: The payment is final and a transaction record has been created
+      value:
+        id: iKv7t5bgt1gg
+        status: success
+        transaction:
+          reference: OBYG-X1PX-FN55
+    payment-response-pending:
+      summary: The payment is pending and further action is required
+      value:
+        id: iKv7t5bgt1gg
+        status: awaiting_user_confirmation
+        action: redirect
+        url: https://www.paypal.com/checkout/redirect
+    payment-initialize-payment-method-reference:
+      summary: Payment using an existing payment method saved on the account
+      value:
+        cart:
+          total:
+            units: 9000
+            currency: USD
+          tax:
+            units: 100
+            currency: USD
+          order_reference: order_100
+          order_description: 'Order #1234567890'
+          display_id: '215614191'
+          items:
+            - name: Bolt Swag Bag
+              reference: item_100
+              description: Large tote with Bolt logo.
+              total_amount:
+                units: 9000
+                currency: USD
+              unit_price: 1000
+              quantity: 9
+              image_url: https://www.example.com/products/123456/images/1.png
+          shipments:
+            - cost:
+                units: 10000
+                currency: USD
+              carrier: FedEx
+              address:
+                .tag: id
+                id: D4g3h5tBuVYK9
+          discounts:
+            - amount:
+                units: 10000
+                currency: USD
+              code: SUMMER10DISCOUNT
+              details_url: https://www.example.com/SUMMER-SALE
+        payment_method:
+          .tag: id
+          id: X5h6j8uLpVGK
