@@ -64,7 +64,7 @@ func CreatePaymentMethodExtendedPaypal(paypal PaymentMethodPaypal) PaymentMethod
 func (u *PaymentMethodExtended) UnmarshalJSON(data []byte) error {
 
 	type discriminator struct {
-		DotTag string
+		DotTag string `json:".tag"`
 	}
 
 	dis := new(discriminator)
