@@ -345,45 +345,6 @@ func main() {
 			OrderReference:   "order_100",
 			OrderDescription: boltgo.String("Order #1234567890"),
 			DisplayID:        boltgo.String("215614191"),
-			Shipments: []components.CartShipment{
-				components.CartShipment{
-					Address: components.CreateAddressReferenceSchemas(
-						components.Schemas{
-							DotTag: components.SchemasTagID,
-							ID:     "D4g3h5tBuVYK9",
-						},
-					),
-					Cost: &components.Amount{
-						Currency: components.CurrencyUsd,
-						Units:    900,
-					},
-					Carrier: boltgo.String("FedEx"),
-				},
-			},
-			Discounts: []components.CartDiscount{
-				components.CartDiscount{
-					Amount: components.Amount{
-						Currency: components.CurrencyUsd,
-						Units:    900,
-					},
-					Code:       boltgo.String("SUMMER10DISCOUNT"),
-					DetailsURL: boltgo.String("https://www.example.com/SUMMER-SALE"),
-				},
-			},
-			Items: []components.CartItem{
-				components.CartItem{
-					Name:        "Bolt Swag Bag",
-					Reference:   "item_100",
-					Description: boltgo.String("Large tote with Bolt logo."),
-					TotalAmount: components.Amount{
-						Currency: components.CurrencyUsd,
-						Units:    900,
-					},
-					UnitPrice: 1000,
-					Quantity:  1,
-					ImageURL:  boltgo.String("https://www.example.com/products/123456/images/1.png"),
-				},
-			},
 			Total: components.Amount{
 				Currency: components.CurrencyUsd,
 				Units:    900,

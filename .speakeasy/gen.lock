@@ -4,7 +4,7 @@ management:
   docChecksum: 4ffd4942026558444f933f9c092631c9
   docVersion: 3.0.1
   speakeasyVersion: internal
-  generationVersion: 2.250.16
+  generationVersion: 2.253.0
   releaseVersion: 0.2.0
   configChecksum: b56d94686a3b574a011603c5df356445
   repoURL: https://github.com/speakeasy-sdks/bolt-go.git
