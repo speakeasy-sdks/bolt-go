@@ -46,7 +46,7 @@ func main() {
 		}),
 	)
 
-	var xPublishableKey string = "string"
+	var xPublishableKey string = "<value>"
 
 	ctx := context.Background()
 	res, err := s.Account.GetDetails(ctx, xPublishableKey)
@@ -129,7 +129,7 @@ func main() {
 		}),
 	)
 
-	var xPublishableKey string = "string"
+	var xPublishableKey string = "<value>"
 
 	ctx := context.Background()
 	res, err := s.Account.GetDetails(ctx, xPublishableKey)
@@ -183,7 +183,7 @@ func main() {
 		}),
 	)
 
-	var xPublishableKey string = "string"
+	var xPublishableKey string = "<value>"
 
 	ctx := context.Background()
 	res, err := s.Account.GetDetails(ctx, xPublishableKey)
@@ -224,7 +224,7 @@ func main() {
 		}),
 	)
 
-	var xPublishableKey string = "string"
+	var xPublishableKey string = "<value>"
 
 	ctx := context.Background()
 	res, err := s.Account.GetDetails(ctx, xPublishableKey)
@@ -299,7 +299,7 @@ func main() {
 		}),
 	)
 
-	var xPublishableKey string = "string"
+	var xPublishableKey string = "<value>"
 
 	ctx := context.Background()
 	res, err := s.Account.GetDetails(ctx, xPublishableKey)
@@ -331,7 +331,7 @@ import (
 func main() {
 	s := boltgo.New()
 
-	var xPublishableKey string = "string"
+	var xPublishableKey string = "<value>"
 
 	guestPaymentInitializeRequest := components.GuestPaymentInitializeRequest{
 		Profile: components.ProfileCreationData{

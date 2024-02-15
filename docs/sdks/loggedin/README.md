@@ -33,7 +33,7 @@ func main() {
     )
 
 
-    var xPublishableKey string = "string"
+    var xPublishableKey string = "<value>"
 
     paymentInitializeRequest := components.PaymentInitializeRequest{
         Cart: components.Cart{
@@ -113,7 +113,7 @@ func main() {
 
     var id string = "iKv7t5bgt1gg"
 
-    var xPublishableKey string = "string"
+    var xPublishableKey string = "<value>"
 
     paymentUpdateRequest := components.PaymentUpdateRequest{}
 
@@ -174,7 +174,7 @@ func main() {
 
     var id string = "iKv7t5bgt1gg"
 
-    var xPublishableKey string = "string"
+    var xPublishableKey string = "<value>"
 
     paymentActionRequest := components.PaymentActionRequest{
         DotTag: components.PaymentActionRequestTagFinalize,

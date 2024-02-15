@@ -37,9 +37,9 @@ func main() {
 
     ctx := context.Background()
     res, err := s.OAuth.GetToken(ctx, components.GetAccessTokenRequest{
-        Code: "string",
-        ClientID: "string",
-        ClientSecret: "string",
+        Code: "<value>",
+        ClientID: "<value>",
+        ClientSecret: "<value>",
         GrantType: components.GrantTypeAuthorizationCode,
         Scope: []components.Scope{
             components.ScopeBoltAccountManage,
