@@ -30,7 +30,11 @@ func newLoggedIn(sdkConfig sdkConfiguration) *LoggedIn {
 // Initialize a Bolt payment token that will be used to reference this payment to
 // Bolt when it is updated or finalized for logged in shoppers.
 func (s *LoggedIn) Initialize(ctx context.Context, xPublishableKey string, paymentInitializeRequest components.PaymentInitializeRequest) (*operations.PaymentsInitializeResponse, error) {
-	hookCtx := hooks.HookContext{OperationID: "paymentsInitialize"}
+	hookCtx := hooks.HookContext{
+		Context:        ctx,
+		OperationID:    "paymentsInitialize",
+		SecuritySource: s.sdkConfiguration.Security,
+	}
 
 	request := operations.PaymentsInitializeRequest{
 		XPublishableKey:          xPublishableKey,
@@ -58,12 +62,12 @@ func (s *LoggedIn) Initialize(ctx context.Context, xPublishableKey string, payme
 
 	utils.PopulateHeaders(ctx, req, request)
 
-	req, err = s.sdkConfiguration.Hooks.BeforeRequest(hooks.BeforeRequestContext{hookCtx}, req)
+	client := s.sdkConfiguration.SecurityClient
+
+	req, err = s.sdkConfiguration.Hooks.BeforeRequest(hooks.BeforeRequestContext{HookContext: hookCtx}, req)
 	if err != nil {
 		return nil, err
 	}
-
-	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil || httpRes == nil {
@@ -73,15 +77,15 @@ func (s *LoggedIn) Initialize(ctx context.Context, xPublishableKey string, payme
 			err = fmt.Errorf("error sending request: no response")
 		}
 
-		_, err = s.sdkConfiguration.Hooks.AfterError(hooks.AfterErrorContext{hookCtx}, nil, err)
+		_, err = s.sdkConfiguration.Hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
 		return nil, err
 	} else if utils.MatchStatusCodes([]string{"4XX", "5XX"}, httpRes.StatusCode) {
-		httpRes, err = s.sdkConfiguration.Hooks.AfterError(hooks.AfterErrorContext{hookCtx}, httpRes, nil)
+		httpRes, err = s.sdkConfiguration.Hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, httpRes, nil)
 		if err != nil {
 			return nil, err
 		}
 	} else {
-		httpRes, err = s.sdkConfiguration.Hooks.AfterSuccess(hooks.AfterSuccessContext{hookCtx}, httpRes)
+		httpRes, err = s.sdkConfiguration.Hooks.AfterSuccess(hooks.AfterSuccessContext{HookContext: hookCtx}, httpRes)
 		if err != nil {
 			return nil, err
 		}
@@ -136,7 +140,11 @@ func (s *LoggedIn) Initialize(ctx context.Context, xPublishableKey string, payme
 // Update an existing payment
 // Update a pending payment
 func (s *LoggedIn) Update(ctx context.Context, id string, xPublishableKey string, paymentUpdateRequest components.PaymentUpdateRequest) (*operations.PaymentsUpdateResponse, error) {
-	hookCtx := hooks.HookContext{OperationID: "paymentsUpdate"}
+	hookCtx := hooks.HookContext{
+		Context:        ctx,
+		OperationID:    "paymentsUpdate",
+		SecuritySource: s.sdkConfiguration.Security,
+	}
 
 	request := operations.PaymentsUpdateRequest{
 		ID:                   id,
@@ -165,12 +173,12 @@ func (s *LoggedIn) Update(ctx context.Context, id string, xPublishableKey string
 
 	utils.PopulateHeaders(ctx, req, request)
 
-	req, err = s.sdkConfiguration.Hooks.BeforeRequest(hooks.BeforeRequestContext{hookCtx}, req)
+	client := s.sdkConfiguration.SecurityClient
+
+	req, err = s.sdkConfiguration.Hooks.BeforeRequest(hooks.BeforeRequestContext{HookContext: hookCtx}, req)
 	if err != nil {
 		return nil, err
 	}
-
-	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil || httpRes == nil {
@@ -180,15 +188,15 @@ func (s *LoggedIn) Update(ctx context.Context, id string, xPublishableKey string
 			err = fmt.Errorf("error sending request: no response")
 		}
 
-		_, err = s.sdkConfiguration.Hooks.AfterError(hooks.AfterErrorContext{hookCtx}, nil, err)
+		_, err = s.sdkConfiguration.Hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
 		return nil, err
 	} else if utils.MatchStatusCodes([]string{"4XX", "5XX"}, httpRes.StatusCode) {
-		httpRes, err = s.sdkConfiguration.Hooks.AfterError(hooks.AfterErrorContext{hookCtx}, httpRes, nil)
+		httpRes, err = s.sdkConfiguration.Hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, httpRes, nil)
 		if err != nil {
 			return nil, err
 		}
 	} else {
-		httpRes, err = s.sdkConfiguration.Hooks.AfterSuccess(hooks.AfterSuccessContext{hookCtx}, httpRes)
+		httpRes, err = s.sdkConfiguration.Hooks.AfterSuccess(hooks.AfterSuccessContext{HookContext: hookCtx}, httpRes)
 		if err != nil {
 			return nil, err
 		}
@@ -243,7 +251,11 @@ func (s *LoggedIn) Update(ctx context.Context, id string, xPublishableKey string
 // PerformAction - Perform an irreversible action (e.g. finalize) on a pending payment
 // Perform an irreversible action on a pending payment, such as finalizing it.
 func (s *LoggedIn) PerformAction(ctx context.Context, id string, xPublishableKey string, paymentActionRequest components.PaymentActionRequest) (*operations.PaymentsActionResponse, error) {
-	hookCtx := hooks.HookContext{OperationID: "paymentsAction"}
+	hookCtx := hooks.HookContext{
+		Context:        ctx,
+		OperationID:    "paymentsAction",
+		SecuritySource: s.sdkConfiguration.Security,
+	}
 
 	request := operations.PaymentsActionRequest{
 		ID:                   id,
@@ -272,12 +284,12 @@ func (s *LoggedIn) PerformAction(ctx context.Context, id string, xPublishableKey
 
 	utils.PopulateHeaders(ctx, req, request)
 
-	req, err = s.sdkConfiguration.Hooks.BeforeRequest(hooks.BeforeRequestContext{hookCtx}, req)
+	client := s.sdkConfiguration.SecurityClient
+
+	req, err = s.sdkConfiguration.Hooks.BeforeRequest(hooks.BeforeRequestContext{HookContext: hookCtx}, req)
 	if err != nil {
 		return nil, err
 	}
-
-	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil || httpRes == nil {
@@ -287,15 +299,15 @@ func (s *LoggedIn) PerformAction(ctx context.Context, id string, xPublishableKey
 			err = fmt.Errorf("error sending request: no response")
 		}
 
-		_, err = s.sdkConfiguration.Hooks.AfterError(hooks.AfterErrorContext{hookCtx}, nil, err)
+		_, err = s.sdkConfiguration.Hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
 		return nil, err
 	} else if utils.MatchStatusCodes([]string{"4XX", "5XX"}, httpRes.StatusCode) {
-		httpRes, err = s.sdkConfiguration.Hooks.AfterError(hooks.AfterErrorContext{hookCtx}, httpRes, nil)
+		httpRes, err = s.sdkConfiguration.Hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, httpRes, nil)
 		if err != nil {
 			return nil, err
 		}
 	} else {
-		httpRes, err = s.sdkConfiguration.Hooks.AfterSuccess(hooks.AfterSuccessContext{hookCtx}, httpRes)
+		httpRes, err = s.sdkConfiguration.Hooks.AfterSuccess(hooks.AfterSuccessContext{HookContext: hookCtx}, httpRes)
 		if err != nil {
 			return nil, err
 		}

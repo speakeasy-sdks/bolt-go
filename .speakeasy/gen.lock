@@ -4,18 +4,18 @@ management:
   docChecksum: 4ffd4942026558444f933f9c092631c9
   docVersion: 3.0.1
   speakeasyVersion: internal
-  generationVersion: 2.263.3
-  releaseVersion: 0.3.1
-  configChecksum: 8dfc315d505fbc14077146fd75b247e3
+  generationVersion: 2.272.4
+  releaseVersion: 0.3.2
+  configChecksum: fecf9b9902d7c361f5780992a5c2a163
   repoURL: https://github.com/speakeasy-sdks/bolt-go.git
   repoSubDirectory: .
   installationURL: https://github.com/speakeasy-sdks/bolt-go
   published: true
 features:
   go:
-    core: 3.4.1
+    core: 3.4.3
     flattening: 2.81.1
-    globalSecurity: 2.82.6
+    globalSecurity: 2.82.7
     globalServerURLs: 2.82.1
     groups: 2.81.2
     ignores: 2.81.1

@@ -31,7 +31,11 @@ func newAccount(sdkConfig sdkConfiguration) *Account {
 // GetDetails - Retrieve account details
 // Retrieve a shopper's account details, such as addresses and payment information
 func (s *Account) GetDetails(ctx context.Context, xPublishableKey string) (*operations.AccountGetResponse, error) {
-	hookCtx := hooks.HookContext{OperationID: "accountGet"}
+	hookCtx := hooks.HookContext{
+		Context:        ctx,
+		OperationID:    "accountGet",
+		SecuritySource: s.sdkConfiguration.Security,
+	}
 
 	request := operations.AccountGetRequest{
 		XPublishableKey: xPublishableKey,
@@ -52,12 +56,12 @@ func (s *Account) GetDetails(ctx context.Context, xPublishableKey string) (*oper
 
 	utils.PopulateHeaders(ctx, req, request)
 
-	req, err = s.sdkConfiguration.Hooks.BeforeRequest(hooks.BeforeRequestContext{hookCtx}, req)
+	client := s.sdkConfiguration.SecurityClient
+
+	req, err = s.sdkConfiguration.Hooks.BeforeRequest(hooks.BeforeRequestContext{HookContext: hookCtx}, req)
 	if err != nil {
 		return nil, err
 	}
-
-	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil || httpRes == nil {
@@ -67,15 +71,15 @@ func (s *Account) GetDetails(ctx context.Context, xPublishableKey string) (*oper
 			err = fmt.Errorf("error sending request: no response")
 		}
 
-		_, err = s.sdkConfiguration.Hooks.AfterError(hooks.AfterErrorContext{hookCtx}, nil, err)
+		_, err = s.sdkConfiguration.Hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
 		return nil, err
 	} else if utils.MatchStatusCodes([]string{"4XX", "5XX"}, httpRes.StatusCode) {
-		httpRes, err = s.sdkConfiguration.Hooks.AfterError(hooks.AfterErrorContext{hookCtx}, httpRes, nil)
+		httpRes, err = s.sdkConfiguration.Hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, httpRes, nil)
 		if err != nil {
 			return nil, err
 		}
 	} else {
-		httpRes, err = s.sdkConfiguration.Hooks.AfterSuccess(hooks.AfterSuccessContext{hookCtx}, httpRes)
+		httpRes, err = s.sdkConfiguration.Hooks.AfterSuccess(hooks.AfterSuccessContext{HookContext: hookCtx}, httpRes)
 		if err != nil {
 			return nil, err
 		}
@@ -130,7 +134,11 @@ func (s *Account) GetDetails(ctx context.Context, xPublishableKey string) (*oper
 // AddAddress - Add an address
 // Add an address to the shopper's account
 func (s *Account) AddAddress(ctx context.Context, xPublishableKey string, addressListing components.AddressListingInput) (*operations.AccountAddressCreateResponse, error) {
-	hookCtx := hooks.HookContext{OperationID: "accountAddressCreate"}
+	hookCtx := hooks.HookContext{
+		Context:        ctx,
+		OperationID:    "accountAddressCreate",
+		SecuritySource: s.sdkConfiguration.Security,
+	}
 
 	request := operations.AccountAddressCreateRequest{
 		XPublishableKey: xPublishableKey,
@@ -158,12 +166,12 @@ func (s *Account) AddAddress(ctx context.Context, xPublishableKey string, addres
 
 	utils.PopulateHeaders(ctx, req, request)
 
-	req, err = s.sdkConfiguration.Hooks.BeforeRequest(hooks.BeforeRequestContext{hookCtx}, req)
+	client := s.sdkConfiguration.SecurityClient
+
+	req, err = s.sdkConfiguration.Hooks.BeforeRequest(hooks.BeforeRequestContext{HookContext: hookCtx}, req)
 	if err != nil {
 		return nil, err
 	}
-
-	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil || httpRes == nil {
@@ -173,15 +181,15 @@ func (s *Account) AddAddress(ctx context.Context, xPublishableKey string, addres
 			err = fmt.Errorf("error sending request: no response")
 		}
 
-		_, err = s.sdkConfiguration.Hooks.AfterError(hooks.AfterErrorContext{hookCtx}, nil, err)
+		_, err = s.sdkConfiguration.Hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
 		return nil, err
 	} else if utils.MatchStatusCodes([]string{"4XX", "5XX"}, httpRes.StatusCode) {
-		httpRes, err = s.sdkConfiguration.Hooks.AfterError(hooks.AfterErrorContext{hookCtx}, httpRes, nil)
+		httpRes, err = s.sdkConfiguration.Hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, httpRes, nil)
 		if err != nil {
 			return nil, err
 		}
 	} else {
-		httpRes, err = s.sdkConfiguration.Hooks.AfterSuccess(hooks.AfterSuccessContext{hookCtx}, httpRes)
+		httpRes, err = s.sdkConfiguration.Hooks.AfterSuccess(hooks.AfterSuccessContext{HookContext: hookCtx}, httpRes)
 		if err != nil {
 			return nil, err
 		}
@@ -240,7 +248,11 @@ func (s *Account) AddAddress(ctx context.Context, xPublishableKey string, addres
 // that are already associated with other resources, such as transactions or
 // shipments.
 func (s *Account) UpdateAddress(ctx context.Context, id string, xPublishableKey string, addressListing components.AddressListingInput) (*operations.AccountAddressEditResponse, error) {
-	hookCtx := hooks.HookContext{OperationID: "accountAddressEdit"}
+	hookCtx := hooks.HookContext{
+		Context:        ctx,
+		OperationID:    "accountAddressEdit",
+		SecuritySource: s.sdkConfiguration.Security,
+	}
 
 	request := operations.AccountAddressEditRequest{
 		ID:              id,
@@ -269,12 +281,12 @@ func (s *Account) UpdateAddress(ctx context.Context, id string, xPublishableKey 
 
 	utils.PopulateHeaders(ctx, req, request)
 
-	req, err = s.sdkConfiguration.Hooks.BeforeRequest(hooks.BeforeRequestContext{hookCtx}, req)
+	client := s.sdkConfiguration.SecurityClient
+
+	req, err = s.sdkConfiguration.Hooks.BeforeRequest(hooks.BeforeRequestContext{HookContext: hookCtx}, req)
 	if err != nil {
 		return nil, err
 	}
-
-	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil || httpRes == nil {
@@ -284,15 +296,15 @@ func (s *Account) UpdateAddress(ctx context.Context, id string, xPublishableKey 
 			err = fmt.Errorf("error sending request: no response")
 		}
 
-		_, err = s.sdkConfiguration.Hooks.AfterError(hooks.AfterErrorContext{hookCtx}, nil, err)
+		_, err = s.sdkConfiguration.Hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
 		return nil, err
 	} else if utils.MatchStatusCodes([]string{"4XX", "5XX"}, httpRes.StatusCode) {
-		httpRes, err = s.sdkConfiguration.Hooks.AfterError(hooks.AfterErrorContext{hookCtx}, httpRes, nil)
+		httpRes, err = s.sdkConfiguration.Hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, httpRes, nil)
 		if err != nil {
 			return nil, err
 		}
 	} else {
-		httpRes, err = s.sdkConfiguration.Hooks.AfterSuccess(hooks.AfterSuccessContext{hookCtx}, httpRes)
+		httpRes, err = s.sdkConfiguration.Hooks.AfterSuccess(hooks.AfterSuccessContext{HookContext: hookCtx}, httpRes)
 		if err != nil {
 			return nil, err
 		}
@@ -350,7 +362,11 @@ func (s *Account) UpdateAddress(ctx context.Context, id string, xPublishableKey 
 // Delete an existing address. Deleting an address does not invalidate transactions or
 // shipments that are associated with it.
 func (s *Account) DeleteAddress(ctx context.Context, id string, xPublishableKey string) (*operations.AccountAddressDeleteResponse, error) {
-	hookCtx := hooks.HookContext{OperationID: "accountAddressDelete"}
+	hookCtx := hooks.HookContext{
+		Context:        ctx,
+		OperationID:    "accountAddressDelete",
+		SecuritySource: s.sdkConfiguration.Security,
+	}
 
 	request := operations.AccountAddressDeleteRequest{
 		ID:              id,
@@ -372,12 +388,12 @@ func (s *Account) DeleteAddress(ctx context.Context, id string, xPublishableKey 
 
 	utils.PopulateHeaders(ctx, req, request)
 
-	req, err = s.sdkConfiguration.Hooks.BeforeRequest(hooks.BeforeRequestContext{hookCtx}, req)
+	client := s.sdkConfiguration.SecurityClient
+
+	req, err = s.sdkConfiguration.Hooks.BeforeRequest(hooks.BeforeRequestContext{HookContext: hookCtx}, req)
 	if err != nil {
 		return nil, err
 	}
-
-	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil || httpRes == nil {
@@ -387,15 +403,15 @@ func (s *Account) DeleteAddress(ctx context.Context, id string, xPublishableKey 
 			err = fmt.Errorf("error sending request: no response")
 		}
 
-		_, err = s.sdkConfiguration.Hooks.AfterError(hooks.AfterErrorContext{hookCtx}, nil, err)
+		_, err = s.sdkConfiguration.Hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
 		return nil, err
 	} else if utils.MatchStatusCodes([]string{"4XX", "5XX"}, httpRes.StatusCode) {
-		httpRes, err = s.sdkConfiguration.Hooks.AfterError(hooks.AfterErrorContext{hookCtx}, httpRes, nil)
+		httpRes, err = s.sdkConfiguration.Hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, httpRes, nil)
 		if err != nil {
 			return nil, err
 		}
 	} else {
-		httpRes, err = s.sdkConfiguration.Hooks.AfterSuccess(hooks.AfterSuccessContext{hookCtx}, httpRes)
+		httpRes, err = s.sdkConfiguration.Hooks.AfterSuccess(hooks.AfterSuccessContext{HookContext: hookCtx}, httpRes)
 		if err != nil {
 			return nil, err
 		}
@@ -440,7 +456,11 @@ func (s *Account) DeleteAddress(ctx context.Context, id string, xPublishableKey 
 // Detect - Determine the existence of a Bolt account
 // Determine whether or not an identifier is associated with an existing Bolt account.
 func (s *Account) Detect(ctx context.Context, identifier components.Identifier, xPublishableKey string) (*operations.AccountExistsResponse, error) {
-	hookCtx := hooks.HookContext{OperationID: "accountExists"}
+	hookCtx := hooks.HookContext{
+		Context:        ctx,
+		OperationID:    "accountExists",
+		SecuritySource: nil,
+	}
 
 	request := operations.AccountExistsRequest{
 		Identifier:      identifier,
@@ -466,12 +486,12 @@ func (s *Account) Detect(ctx context.Context, identifier components.Identifier, 
 		return nil, fmt.Errorf("error populating query params: %w", err)
 	}
 
-	req, err = s.sdkConfiguration.Hooks.BeforeRequest(hooks.BeforeRequestContext{hookCtx}, req)
+	client := s.sdkConfiguration.DefaultClient
+
+	req, err = s.sdkConfiguration.Hooks.BeforeRequest(hooks.BeforeRequestContext{HookContext: hookCtx}, req)
 	if err != nil {
 		return nil, err
 	}
-
-	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil || httpRes == nil {
@@ -481,15 +501,15 @@ func (s *Account) Detect(ctx context.Context, identifier components.Identifier, 
 			err = fmt.Errorf("error sending request: no response")
 		}
 
-		_, err = s.sdkConfiguration.Hooks.AfterError(hooks.AfterErrorContext{hookCtx}, nil, err)
+		_, err = s.sdkConfiguration.Hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
 		return nil, err
 	} else if utils.MatchStatusCodes([]string{"4XX", "5XX"}, httpRes.StatusCode) {
-		httpRes, err = s.sdkConfiguration.Hooks.AfterError(hooks.AfterErrorContext{hookCtx}, httpRes, nil)
+		httpRes, err = s.sdkConfiguration.Hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, httpRes, nil)
 		if err != nil {
 			return nil, err
 		}
 	} else {
-		httpRes, err = s.sdkConfiguration.Hooks.AfterSuccess(hooks.AfterSuccessContext{hookCtx}, httpRes)
+		httpRes, err = s.sdkConfiguration.Hooks.AfterSuccess(hooks.AfterSuccessContext{HookContext: hookCtx}, httpRes)
 		if err != nil {
 			return nil, err
 		}
@@ -537,7 +557,11 @@ func (s *Account) Detect(ctx context.Context, identifier components.Identifier, 
 // **Note**: Before using this API, the credit card details must be tokenized using Bolt's JavaScript library function,
 // which is documented in [Install the Bolt Tokenizer](https://help.bolt.com/developers/references/bolt-tokenizer).
 func (s *Account) AddPaymentMethod(ctx context.Context, xPublishableKey string, paymentMethod components.PaymentMethodInput) (*operations.AccountAddPaymentMethodResponse, error) {
-	hookCtx := hooks.HookContext{OperationID: "accountAddPaymentMethod"}
+	hookCtx := hooks.HookContext{
+		Context:        ctx,
+		OperationID:    "accountAddPaymentMethod",
+		SecuritySource: s.sdkConfiguration.Security,
+	}
 
 	request := operations.AccountAddPaymentMethodRequest{
 		XPublishableKey: xPublishableKey,
@@ -565,12 +589,12 @@ func (s *Account) AddPaymentMethod(ctx context.Context, xPublishableKey string, 
 
 	utils.PopulateHeaders(ctx, req, request)
 
-	req, err = s.sdkConfiguration.Hooks.BeforeRequest(hooks.BeforeRequestContext{hookCtx}, req)
+	client := s.sdkConfiguration.SecurityClient
+
+	req, err = s.sdkConfiguration.Hooks.BeforeRequest(hooks.BeforeRequestContext{HookContext: hookCtx}, req)
 	if err != nil {
 		return nil, err
 	}
-
-	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil || httpRes == nil {
@@ -580,15 +604,15 @@ func (s *Account) AddPaymentMethod(ctx context.Context, xPublishableKey string, 
 			err = fmt.Errorf("error sending request: no response")
 		}
 
-		_, err = s.sdkConfiguration.Hooks.AfterError(hooks.AfterErrorContext{hookCtx}, nil, err)
+		_, err = s.sdkConfiguration.Hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
 		return nil, err
 	} else if utils.MatchStatusCodes([]string{"4XX", "5XX"}, httpRes.StatusCode) {
-		httpRes, err = s.sdkConfiguration.Hooks.AfterError(hooks.AfterErrorContext{hookCtx}, httpRes, nil)
+		httpRes, err = s.sdkConfiguration.Hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, httpRes, nil)
 		if err != nil {
 			return nil, err
 		}
 	} else {
-		httpRes, err = s.sdkConfiguration.Hooks.AfterSuccess(hooks.AfterSuccessContext{hookCtx}, httpRes)
+		httpRes, err = s.sdkConfiguration.Hooks.AfterSuccess(hooks.AfterSuccessContext{HookContext: hookCtx}, httpRes)
 		if err != nil {
 			return nil, err
 		}
@@ -646,7 +670,11 @@ func (s *Account) AddPaymentMethod(ctx context.Context, xPublishableKey string, 
 // Delete an existing payment method. Deleting a payment method does not invalidate transactions or
 // orders that are associated with it.
 func (s *Account) DeletePaymentMethod(ctx context.Context, id string, xPublishableKey string) (*operations.AccountPaymentMethodDeleteResponse, error) {
-	hookCtx := hooks.HookContext{OperationID: "accountPaymentMethodDelete"}
+	hookCtx := hooks.HookContext{
+		Context:        ctx,
+		OperationID:    "accountPaymentMethodDelete",
+		SecuritySource: s.sdkConfiguration.Security,
+	}
 
 	request := operations.AccountPaymentMethodDeleteRequest{
 		ID:              id,
@@ -668,12 +696,12 @@ func (s *Account) DeletePaymentMethod(ctx context.Context, id string, xPublishab
 
 	utils.PopulateHeaders(ctx, req, request)
 
-	req, err = s.sdkConfiguration.Hooks.BeforeRequest(hooks.BeforeRequestContext{hookCtx}, req)
+	client := s.sdkConfiguration.SecurityClient
+
+	req, err = s.sdkConfiguration.Hooks.BeforeRequest(hooks.BeforeRequestContext{HookContext: hookCtx}, req)
 	if err != nil {
 		return nil, err
 	}
-
-	client := s.sdkConfiguration.SecurityClient
 
 	httpRes, err := client.Do(req)
 	if err != nil || httpRes == nil {
@@ -683,15 +711,15 @@ func (s *Account) DeletePaymentMethod(ctx context.Context, id string, xPublishab
 			err = fmt.Errorf("error sending request: no response")
 		}
 
-		_, err = s.sdkConfiguration.Hooks.AfterError(hooks.AfterErrorContext{hookCtx}, nil, err)
+		_, err = s.sdkConfiguration.Hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, nil, err)
 		return nil, err
 	} else if utils.MatchStatusCodes([]string{"4XX", "5XX"}, httpRes.StatusCode) {
-		httpRes, err = s.sdkConfiguration.Hooks.AfterError(hooks.AfterErrorContext{hookCtx}, httpRes, nil)
+		httpRes, err = s.sdkConfiguration.Hooks.AfterError(hooks.AfterErrorContext{HookContext: hookCtx}, httpRes, nil)
 		if err != nil {
 			return nil, err
 		}
 	} else {
-		httpRes, err = s.sdkConfiguration.Hooks.AfterSuccess(hooks.AfterSuccessContext{hookCtx}, httpRes)
+		httpRes, err = s.sdkConfiguration.Hooks.AfterSuccess(hooks.AfterSuccessContext{HookContext: hookCtx}, httpRes)
 		if err != nil {
 			return nil, err
 		}

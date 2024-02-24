@@ -287,19 +287,15 @@ Determine whether or not an identifier is associated with an existing Bolt accou
 package main
 
 import(
-	"github.com/speakeasy-sdks/bolt-go/models/components"
 	boltgo "github.com/speakeasy-sdks/bolt-go"
+	"github.com/speakeasy-sdks/bolt-go/models/components"
 	"context"
 	"log"
 	"net/http"
 )
 
 func main() {
-    s := boltgo.New(
-        boltgo.WithSecurity(components.Security{
-            Oauth: boltgo.String("Bearer <YOUR_ACCESS_TOKEN_HERE>"),
-        }),
-    )
+    s := boltgo.New()
 
 
     identifier := components.Identifier{
