@@ -4,9 +4,9 @@ management:
   docChecksum: 4ffd4942026558444f933f9c092631c9
   docVersion: 3.0.1
   speakeasyVersion: internal
-  generationVersion: 2.272.7
-  releaseVersion: 0.3.3
-  configChecksum: 2498d49ce906524a0c7cb8d018d4937d
+  generationVersion: 2.277.0
+  releaseVersion: 0.3.4
+  configChecksum: 6c855951228f043f36383ca12348cd4e
   repoURL: https://github.com/speakeasy-sdks/bolt-go.git
   repoSubDirectory: .
   installationURL: https://github.com/speakeasy-sdks/bolt-go
@@ -22,7 +22,7 @@ features:
     inputOutputModels: 2.83.0
     methodSecurity: 2.82.2
     nameOverrides: 2.81.1
-    unions: 2.85.3
+    unions: 2.85.4
 generatedFiles:
   - account.go
   - guest.go
