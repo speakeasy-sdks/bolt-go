@@ -48,7 +48,6 @@ func main() {
     if err != nil {
         log.Fatal(err)
     }
-
     if res.Account != nil {
         // handle response
     }
@@ -117,7 +116,6 @@ func main() {
     if err != nil {
         log.Fatal(err)
     }
-
     if res.AddressListing != nil {
         // handle response
     }
@@ -192,7 +190,6 @@ func main() {
     if err != nil {
         log.Fatal(err)
     }
-
     if res.AddressListing != nil {
         // handle response
     }
@@ -233,7 +230,6 @@ import(
 	boltgo "github.com/speakeasy-sdks/bolt-go"
 	"context"
 	"log"
-	"net/http"
 )
 
 func main() {
@@ -253,8 +249,7 @@ func main() {
     if err != nil {
         log.Fatal(err)
     }
-
-    if res.StatusCode == http.StatusOK {
+    if res != nil {
         // handle response
     }
 }
@@ -291,7 +286,6 @@ import(
 	"github.com/speakeasy-sdks/bolt-go/models/components"
 	"context"
 	"log"
-	"net/http"
 )
 
 func main() {
@@ -310,8 +304,7 @@ func main() {
     if err != nil {
         log.Fatal(err)
     }
-
-    if res.StatusCode == http.StatusOK {
+    if res != nil {
         // handle response
     }
 }
@@ -396,7 +389,6 @@ func main() {
     if err != nil {
         log.Fatal(err)
     }
-
     if res.PaymentMethod != nil {
         // handle response
     }
@@ -436,7 +428,6 @@ import(
 	boltgo "github.com/speakeasy-sdks/bolt-go"
 	"context"
 	"log"
-	"net/http"
 )
 
 func main() {
@@ -456,8 +447,7 @@ func main() {
     if err != nil {
         log.Fatal(err)
     }
-
-    if res.StatusCode == http.StatusOK {
+    if res != nil {
         // handle response
     }
 }

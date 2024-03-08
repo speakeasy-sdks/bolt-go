@@ -3,17 +3,17 @@ id: c441f831-62fa-40ae-89a1-b4a5dcb46dd3
 management:
   docChecksum: 4ffd4942026558444f933f9c092631c9
   docVersion: 3.0.1
-  speakeasyVersion: internal
-  generationVersion: 2.277.0
-  releaseVersion: 0.3.4
-  configChecksum: 6c855951228f043f36383ca12348cd4e
+  speakeasyVersion: 1.204.1
+  generationVersion: 2.279.1
+  releaseVersion: 0.4.0
+  configChecksum: 83a069a5215950fed48d158ba0087367
   repoURL: https://github.com/speakeasy-sdks/bolt-go.git
   repoSubDirectory: .
   installationURL: https://github.com/speakeasy-sdks/bolt-go
   published: true
 features:
   go:
-    core: 3.4.3
+    core: 3.4.4
     flattening: 2.81.1
     globalSecurity: 2.82.8
     globalServerURLs: 2.82.1
@@ -22,6 +22,7 @@ features:
     inputOutputModels: 2.83.0
     methodSecurity: 2.82.2
     nameOverrides: 2.81.1
+    responseFormat: 0.1.0
     unions: 2.85.4
 generatedFiles:
   - account.go
