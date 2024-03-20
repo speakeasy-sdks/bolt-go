@@ -67,11 +67,8 @@ func main() {
 ### [Account](docs/sdks/account/README.md)
 
 * [GetDetails](docs/sdks/account/README.md#getdetails) - Retrieve account details
-* [AddAddress](docs/sdks/account/README.md#addaddress) - Add an address
-* [UpdateAddress](docs/sdks/account/README.md#updateaddress) - Edit an existing address
 * [DeleteAddress](docs/sdks/account/README.md#deleteaddress) - Delete an existing address
 * [Detect](docs/sdks/account/README.md#detect) - Determine the existence of a Bolt account
-* [AddPaymentMethod](docs/sdks/account/README.md#addpaymentmethod) - Add a payment method to a shopper's Bolt account Wallet.
 * [DeletePaymentMethod](docs/sdks/account/README.md#deletepaymentmethod) - Delete an existing payment method
 
 

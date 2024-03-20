@@ -3,10 +3,10 @@ id: c441f831-62fa-40ae-89a1-b4a5dcb46dd3
 management:
   docChecksum: 4ffd4942026558444f933f9c092631c9
   docVersion: 3.0.1
-  speakeasyVersion: 1.207.1
-  generationVersion: 2.280.6
-  releaseVersion: 0.4.1
-  configChecksum: b6c6701ca5955e8a2b651b12d5ace26c
+  speakeasyVersion: 1.213.0
+  generationVersion: 2.283.1
+  releaseVersion: 0.4.2
+  configChecksum: b285d3488d6e4075276be0452831cc66
   repoURL: https://github.com/speakeasy-sdks/bolt-go.git
   repoSubDirectory: .
   installationURL: https://github.com/speakeasy-sdks/bolt-go
@@ -15,7 +15,7 @@ features:
   go:
     core: 3.4.4
     flattening: 2.81.1
-    globalSecurity: 2.82.8
+    globalSecurity: 2.82.9
     globalServerURLs: 2.82.2
     groups: 2.81.2
     ignores: 2.81.1
@@ -50,11 +50,8 @@ generatedFiles:
   - internal/utils/security.go
   - internal/utils/utils.go
   - /models/operations/accountget.go
-  - /models/operations/accountaddresscreate.go
-  - /models/operations/accountaddressedit.go
   - /models/operations/accountaddressdelete.go
   - /models/operations/accountexists.go
-  - /models/operations/accountaddpaymentmethod.go
   - /models/operations/accountpaymentmethoddelete.go
   - /models/operations/guestpaymentsinitialize.go
   - /models/operations/guestpaymentsupdate.go
@@ -70,15 +67,13 @@ generatedFiles:
   - /models/components/paymentmethod.go
   - /models/components/paymentmethodpaypaloutput.go
   - /models/components/addresslisting.go
-  - /models/components/addresserror.go
   - /models/components/identifier.go
-  - /models/components/creditcarderror.go
-  - /models/components/paymentmethodinput.go
-  - /models/components/paymentmethodcreditcard.go
-  - /models/components/addressreference.go
   - /models/components/paymentresponse.go
   - /models/components/transaction.go
   - /models/components/guestpaymentinitializerequest.go
+  - /models/components/paymentmethodinput.go
+  - /models/components/paymentmethodcreditcard.go
+  - /models/components/addressreference.go
   - /models/components/cart.go
   - /models/components/amount.go
   - /models/components/cartitem.go
@@ -96,21 +91,12 @@ generatedFiles:
   - /models/components/testcreditcard.go
   - /models/components/security.go
   - /models/sdkerrors/error.go
-  - /models/sdkerrors/accountaddresscreate.go
-  - /models/sdkerrors/accountaddressedit.go
-  - /models/sdkerrors/accountaddpaymentmethod.go
   - docs/models/operations/accountgetrequest.md
   - docs/models/operations/accountgetresponse.md
-  - docs/models/operations/accountaddresscreaterequest.md
-  - docs/models/operations/accountaddresscreateresponse.md
-  - docs/models/operations/accountaddresseditrequest.md
-  - docs/models/operations/accountaddresseditresponse.md
   - docs/models/operations/accountaddressdeleterequest.md
   - docs/models/operations/accountaddressdeleteresponse.md
   - docs/models/operations/accountexistsrequest.md
   - docs/models/operations/accountexistsresponse.md
-  - docs/models/operations/accountaddpaymentmethodrequest.md
-  - docs/models/operations/accountaddpaymentmethodresponse.md
   - docs/models/operations/accountpaymentmethoddeleterequest.md
   - docs/models/operations/accountpaymentmethoddeleteresponse.md
   - docs/models/operations/guestpaymentsinitializesecurity.md
@@ -144,13 +130,16 @@ generatedFiles:
   - docs/models/components/paymentmethodpaypaloutput.md
   - docs/models/components/countrycode.md
   - docs/models/components/addresslisting.md
-  - docs/models/components/addresserrortag.md
-  - docs/models/components/addresserror.md
-  - docs/models/components/addresslistinginput.md
   - docs/models/components/identifiertype.md
   - docs/models/components/identifier.md
-  - docs/models/components/creditcarderrortag.md
-  - docs/models/components/creditcarderror.md
+  - docs/models/components/schemasstatus.md
+  - docs/models/components/action.md
+  - docs/models/components/paymentresponsependingschemas.md
+  - docs/models/components/status.md
+  - docs/models/components/paymentresponsefinalizedschemas.md
+  - docs/models/components/paymentresponse.md
+  - docs/models/components/transaction.md
+  - docs/models/components/guestpaymentinitializerequest.md
   - docs/models/components/paymentmethodinput.md
   - docs/models/components/paymentmethodcreditcardinput.md
   - docs/models/components/schemasaddressreferenceexplicittag.md
@@ -160,14 +149,6 @@ generatedFiles:
   - docs/models/components/schemas.md
   - docs/models/components/addressreference.md
   - docs/models/components/paymentmethodpaypal.md
-  - docs/models/components/schemasstatus.md
-  - docs/models/components/action.md
-  - docs/models/components/paymentresponsependingschemas.md
-  - docs/models/components/status.md
-  - docs/models/components/paymentresponsefinalizedschemas.md
-  - docs/models/components/paymentresponse.md
-  - docs/models/components/transaction.md
-  - docs/models/components/guestpaymentinitializerequest.md
   - docs/models/components/cart.md
   - docs/models/components/currency.md
   - docs/models/components/amount.md
@@ -197,9 +178,6 @@ generatedFiles:
   - docs/models/components/security.md
   - docs/models/sdkerrors/dottag.md
   - docs/models/sdkerrors/error.md
-  - docs/models/sdkerrors/accountaddresscreateresponsebody.md
-  - docs/models/sdkerrors/accountaddresseditresponsebody.md
-  - docs/models/sdkerrors/accountaddpaymentmethodresponsebody.md
   - docs/sdks/boltpublicapi/README.md
   - docs/sdks/account/README.md
   - docs/sdks/payments/README.md
