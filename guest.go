@@ -60,7 +60,7 @@ func (s *Guest) Initialize(ctx context.Context, security operations.GuestPayment
 	req.Header.Set("User-Agent", s.sdkConfiguration.UserAgent)
 	req.Header.Set("Content-Type", reqContentType)
 
-	utils.PopulateHeaders(ctx, req, request)
+	utils.PopulateHeaders(ctx, req, request, nil)
 
 	if err := utils.PopulateSecurity(ctx, req, withSecurity(security)); err != nil {
 		return nil, err
@@ -173,7 +173,7 @@ func (s *Guest) Update(ctx context.Context, security operations.GuestPaymentsUpd
 	req.Header.Set("User-Agent", s.sdkConfiguration.UserAgent)
 	req.Header.Set("Content-Type", reqContentType)
 
-	utils.PopulateHeaders(ctx, req, request)
+	utils.PopulateHeaders(ctx, req, request, nil)
 
 	if err := utils.PopulateSecurity(ctx, req, withSecurity(security)); err != nil {
 		return nil, err
@@ -286,7 +286,7 @@ func (s *Guest) PerformAction(ctx context.Context, security operations.GuestPaym
 	req.Header.Set("User-Agent", s.sdkConfiguration.UserAgent)
 	req.Header.Set("Content-Type", reqContentType)
 
-	utils.PopulateHeaders(ctx, req, request)
+	utils.PopulateHeaders(ctx, req, request, nil)
 
 	if err := utils.PopulateSecurity(ctx, req, withSecurity(security)); err != nil {
 		return nil, err
