@@ -18,7 +18,7 @@ jobs:
       force: ${{ github.event.inputs.force }}
       languages: |
         - go
-      mode: direct
+      mode: pr
       openapi_docs: |
         - ./openapi.yaml
       speakeasy_version: latest
